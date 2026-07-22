@@ -17,3 +17,8 @@ where status = 'completed'
 group by customers.name
 order by round(sum(quantity * unit_price), 2) desc
 limit 5;
+
+-- Query 3: Produtos com estoque abaixo de 30 unidades
+select name, stock_quantity from products
+where stock_quantity < 30
+order by stock_quantity asc;
