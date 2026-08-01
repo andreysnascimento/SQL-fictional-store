@@ -22,3 +22,13 @@ limit 5;
 select name, stock_quantity from products
 where stock_quantity < 30
 order by stock_quantity asc;
+
+-- Query 4: Ticket médio por pedido (apenas pedidos completed)
+SELECT AVG(order_total)
+FROM (
+    SELECT order_id, SUM(quantity * unit_price) AS order_total
+    FROM order_items
+    JOIN orders ON order_items.order_id = orders.order_id
+    WHERE status = 'completed'
+    GROUP BY order_id
+) AS pedidos;
