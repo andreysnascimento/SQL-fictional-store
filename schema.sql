@@ -1,6 +1,6 @@
 -- schema.sql
 -- Estrutura do banco de dados de uma loja fictícia (e-commerce simplificado)
--- Versão adaptada para SQLite
+-- Versão para PostgreSQL
 
 DROP TABLE IF EXISTS order_items;
 DROP TABLE IF EXISTS orders;
@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS customers;
 
 CREATE TABLE customers (
-    customer_id     INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id     SERIAL PRIMARY KEY,
     name            VARCHAR(100) NOT NULL,
     email           VARCHAR(150) UNIQUE NOT NULL,
     city            VARCHAR(100),
@@ -18,12 +18,12 @@ CREATE TABLE customers (
 );
 
 CREATE TABLE categories (
-    category_id     INTEGER PRIMARY KEY AUTOINCREMENT,
+    category_id     SERIAL PRIMARY KEY,
     name            VARCHAR(80) NOT NULL
 );
 
 CREATE TABLE products (
-    product_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id      SERIAL PRIMARY KEY,
     name            VARCHAR(150) NOT NULL,
     category_id     INT NOT NULL REFERENCES categories(category_id),
     price           NUMERIC(10,2) NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE products (
 );
 
 CREATE TABLE orders (
-    order_id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id        SERIAL PRIMARY KEY,
     customer_id     INT NOT NULL REFERENCES customers(customer_id),
     order_date      DATE NOT NULL,
     status          VARCHAR(20) NOT NULL DEFAULT 'completed'
@@ -39,7 +39,7 @@ CREATE TABLE orders (
 );
 
 CREATE TABLE order_items (
-    order_item_id   INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_item_id   SERIAL PRIMARY KEY,
     order_id        INT NOT NULL REFERENCES orders(order_id),
     product_id      INT NOT NULL REFERENCES products(product_id),
     quantity        INT NOT NULL CHECK (quantity > 0),

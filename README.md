@@ -6,7 +6,7 @@
 
 Projeto de portfólio em SQL simulando o banco de dados de uma loja fictícia (e-commerce simplificado), com foco em modelagem relacional e queries analíticas de negócio.
 
-Rodado em SQLite por enquanto — a escolha foi proposital: o foco neste momento é entender a linguagem SQL e a lógica por trás das queries (JOINs, agregações, filtros), sem a complexidade de configurar um servidor de banco de dados. Conforme o projeto evoluir, pretendo migrar para PostgreSQL e outros SGBDs, explorando recursos mais avançados (window functions completas, tipos de dados mais ricos, performance em escala).
+Rodado em PostgreSQL. O projeto começou em SQLite, focado em fixar a linguagem SQL sem a fricção de configurar um servidor, e foi migrado para PostgreSQL conforme avancei para tópicos mais próximos de produção (tipos de dados mais robustos, regras mais rígidas de agregação, e futuramente window functions completas e performance em escala).
 
 ### Estrutura do banco
 
@@ -28,22 +28,16 @@ Rodado em SQLite por enquanto — a escolha foi proposital: o foco neste momento
 
 1. **Receita total por categoria** — soma de receita agrupada por categoria, considerando apenas pedidos com status `completed`
 2. **Top 5 clientes por valor total gasto** — ranking dos clientes que mais gastaram, considerando apenas pedidos `completed`
+3. **Produtos com estoque baixo** — produtos com menos de 30 unidades em estoque
+4. **Ticket médio por pedido** — valor médio gasto por pedido, usando subquery, considerando apenas pedidos `completed`
 
 ### Como rodar
 
 ```bash
-sqlite3 store.db < schema.sql
-sqlite3 store.db < seed_data.sql
-sqlite3 store.db < queries/queries.sql
-```
-
-Ou, dentro do modo interativo do SQLite:
-
-```bash
-sqlite3 store.db
-.mode column
-.headers on
-.read queries/queries.sql
+createdb store
+psql -d store -f schema.sql
+psql -d store -f seed_data.sql
+psql -d store -f queries/queries.sql
 ```
 
 ### Conceitos demonstrados até aqui
@@ -57,9 +51,7 @@ sqlite3 store.db
 
 ### Próximos passos
 
-- Produtos com estoque baixo
-- Receita mensal (série temporal)
-- Ticket médio por pedido
+- Receita mensal (série temporal, usando `DATE_TRUNC`)
 - Clientes que nunca compraram (`LEFT JOIN`)
 - Window functions (`RANK`, soma acumulada)
 
@@ -69,7 +61,7 @@ sqlite3 store.db
 
 SQL portfolio project simulating a fictional store's (e-commerce) database, focused on relational modeling and business analysis queries.
 
-Currently run on SQLite — a deliberate choice: the focus right now is understanding SQL as a language and the logic behind queries (JOINs, aggregations, filters), without the overhead of setting up a database server. As the project evolves, I plan to migrate to PostgreSQL and other DBMSs, exploring more advanced features (full window function support, richer data types, performance at scale).
+Run on PostgreSQL. The project started on SQLite, focused on mastering the SQL language itself without the overhead of setting up a server, and was migrated to PostgreSQL as I moved on to more production-oriented topics (stricter aggregation rules, richer data types, and eventually full window function support and performance at scale).
 
 ### Database structure
 
@@ -91,22 +83,16 @@ Currently run on SQLite — a deliberate choice: the focus right now is understa
 
 1. **Total revenue by category** — revenue summed and grouped by category, only for `completed` orders
 2. **Top 5 customers by total spending** — ranking of customers who spent the most, only for `completed` orders
+3. **Low stock products** — products with fewer than 30 units in stock
+4. **Average order ticket** — average amount spent per order, using a subquery, only for `completed` orders
 
 ### How to run
 
 ```bash
-sqlite3 store.db < schema.sql
-sqlite3 store.db < seed_data.sql
-sqlite3 store.db < queries/queries.sql
-```
-
-Or, inside SQLite's interactive mode:
-
-```bash
-sqlite3 store.db
-.mode column
-.headers on
-.read queries/queries.sql
+createdb store
+psql -d store -f schema.sql
+psql -d store -f seed_data.sql
+psql -d store -f queries/queries.sql
 ```
 
 ### Concepts demonstrated so far
@@ -120,9 +106,7 @@ sqlite3 store.db
 
 ### Next steps
 
-- Low stock products
-- Monthly revenue (time series)
-- Average order ticket
+- Monthly revenue (time series, using `DATE_TRUNC`)
 - Customers who never purchased (`LEFT JOIN`)
 - Window functions (`RANK`, running total)
 
