@@ -6,7 +6,7 @@
 
 Projeto de portfólio em SQL simulando o banco de dados de uma loja fictícia (e-commerce simplificado), com foco em modelagem relacional e queries analíticas de negócio.
 
-Rodado em PostgreSQL. O projeto começou em SQLite, focado em fixar a linguagem SQL sem a fricção de configurar um servidor, e foi migrado para PostgreSQL conforme avancei para tópicos mais próximos de produção (tipos de dados mais robustos, regras mais rígidas de agregação, e futuramente window functions completas e performance em escala).
+Rodado em PostgreSQL. O projeto começou em SQLite, focado em fixar a linguagem SQL sem a fricção de configurar um servidor, e foi migrado para PostgreSQL conforme avancei para tópicos mais próximos de produção (tipos de dados mais robustos e regras mais rígidas de agregação).
 
 ### Estrutura do banco
 
@@ -22,14 +22,18 @@ Rodado em PostgreSQL. O projeto começou em SQLite, focado em fixar a linguagem 
 |---|---|
 | `schema.sql` | Criação das tabelas, chaves primárias/estrangeiras, constraints e índices |
 | `seed_data.sql` | Dados fictícios para popular o banco (10 clientes, 10 produtos, 15 pedidos, 20 itens) |
-| `queries/queries.sql` | Queries de análise de negócio |
+| `queries/queries.sql` | 6 queries de análise de negócio, ordenadas da mais simples para a mais avançada, com comentários bilíngues explicando o objetivo de cada uma |
 
-### Queries já implementadas
+### Queries implementadas
 
-1. **Receita total por categoria** — soma de receita agrupada por categoria, considerando apenas pedidos com status `completed`
-2. **Top 5 clientes por valor total gasto** — ranking dos clientes que mais gastaram, considerando apenas pedidos `completed`
-3. **Produtos com estoque baixo** — produtos com menos de 30 unidades em estoque
-4. **Ticket médio por pedido** — valor médio gasto por pedido, usando subquery, considerando apenas pedidos `completed`
+As queries estão ordenadas por complexidade crescente:
+
+1. **Produtos com estoque baixo** — produtos com menos de 30 unidades em estoque
+2. **Receita total por categoria** — soma de receita agrupada por categoria, considerando apenas pedidos `completed`
+3. **Top 5 clientes por valor total gasto** — ranking dos clientes que mais gastaram, considerando apenas pedidos `completed`
+4. **Clientes que nunca compraram** — usando `LEFT JOIN` para identificar clientes sem nenhum pedido
+5. **Ticket médio por pedido** — valor médio gasto por pedido, usando subquery, considerando apenas pedidos `completed`
+6. **Ranking de produtos mais vendidos** — usando a window function `RANK()` para posicionar cada produto por quantidade vendida
 
 ### Como rodar
 
@@ -40,20 +44,17 @@ psql -d store -f seed_data.sql
 psql -d store -f queries/queries.sql
 ```
 
-### Conceitos demonstrados até aqui
+### Conceitos demonstrados
 
 - Modelagem relacional (1:N, chaves estrangeiras)
-- JOINs (INNER, encadeados com múltiplas tabelas)
-- Agregações (`SUM`, `GROUP BY`)
+- JOINs (INNER, encadeados com múltiplas tabelas, e LEFT JOIN)
+- Agregações (`SUM`, `AVG`, `GROUP BY`)
 - Filtros combinados com JOIN (`WHERE` aplicado após junção)
 - Ordenação e limitação de resultados (`ORDER BY`, `LIMIT`)
+- Subqueries (consulta dentro de consulta)
+- Window functions (`RANK() OVER (...)`)
 - Tratamento de ponto flutuante (`ROUND`)
-
-### Próximos passos
-
-- Receita mensal (série temporal, usando `DATE_TRUNC`)
-- Clientes que nunca compraram (`LEFT JOIN`)
-- Window functions (`RANK`, soma acumulada)
+- Diferenças de comportamento entre SQLite e PostgreSQL (rigor de `GROUP BY`, ambiguidade de colunas)
 
 ---
 
@@ -61,7 +62,7 @@ psql -d store -f queries/queries.sql
 
 SQL portfolio project simulating a fictional store's (e-commerce) database, focused on relational modeling and business analysis queries.
 
-Run on PostgreSQL. The project started on SQLite, focused on mastering the SQL language itself without the overhead of setting up a server, and was migrated to PostgreSQL as I moved on to more production-oriented topics (stricter aggregation rules, richer data types, and eventually full window function support and performance at scale).
+Run on PostgreSQL. The project started on SQLite, focused on mastering the SQL language itself without the overhead of setting up a server, and was migrated to PostgreSQL as I moved on to more production-oriented topics (richer data types and stricter aggregation rules).
 
 ### Database structure
 
@@ -77,14 +78,18 @@ Run on PostgreSQL. The project started on SQLite, focused on mastering the SQL l
 |---|---|
 | `schema.sql` | Table creation, primary/foreign keys, constraints and indexes |
 | `seed_data.sql` | Fictional data to populate the database (10 customers, 10 products, 15 orders, 20 items) |
-| `queries/queries.sql` | Business analysis queries |
+| `queries/queries.sql` | 6 business analysis queries, ordered from simplest to most advanced, with bilingual comments explaining the purpose of each one |
 
-### Queries implemented so far
+### Queries implemented
 
-1. **Total revenue by category** — revenue summed and grouped by category, only for `completed` orders
-2. **Top 5 customers by total spending** — ranking of customers who spent the most, only for `completed` orders
-3. **Low stock products** — products with fewer than 30 units in stock
-4. **Average order ticket** — average amount spent per order, using a subquery, only for `completed` orders
+Queries are ordered by increasing complexity:
+
+1. **Low stock products** — products with fewer than 30 units in stock
+2. **Total revenue by category** — revenue summed and grouped by category, only for `completed` orders
+3. **Top 5 customers by total spending** — ranking of customers who spent the most, only for `completed` orders
+4. **Customers who never purchased** — using `LEFT JOIN` to identify customers with no orders
+5. **Average order ticket** — average amount spent per order, using a subquery, only for `completed` orders
+6. **Top selling products ranking** — using the `RANK()` window function to position each product by units sold
 
 ### How to run
 
@@ -95,20 +100,17 @@ psql -d store -f seed_data.sql
 psql -d store -f queries/queries.sql
 ```
 
-### Concepts demonstrated so far
+### Concepts demonstrated
 
 - Relational modeling (1:N, foreign keys)
-- JOINs (INNER, chained across multiple tables)
-- Aggregations (`SUM`, `GROUP BY`)
+- JOINs (INNER, chained across multiple tables, and LEFT JOIN)
+- Aggregations (`SUM`, `AVG`, `GROUP BY`)
 - Filters combined with JOINs (`WHERE` applied after joining)
 - Sorting and limiting results (`ORDER BY`, `LIMIT`)
+- Subqueries (query within a query)
+- Window functions (`RANK() OVER (...)`)
 - Floating point handling (`ROUND`)
-
-### Next steps
-
-- Monthly revenue (time series, using `DATE_TRUNC`)
-- Customers who never purchased (`LEFT JOIN`)
-- Window functions (`RANK`, running total)
+- Behavioral differences between SQLite and PostgreSQL (`GROUP BY` strictness, column ambiguity)
 
 ---
 
